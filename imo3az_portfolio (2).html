@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moaz Mohamed (@imo3az_) | Video Editor & Creative Designer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        accent: {
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        },
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                        },
+                        darkbg: {
+                            850: '#13131f',
+                            900: '#0d0d16',
+                            950: '#07070c'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .studio-grid {
+            background-image: linear-gradient(to right, rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+        }
+
+        body.edit-mode [contenteditable="true"] {
+            outline: 2px dashed #8b5cf6;
+            outline-offset: 4px;
+            border-radius: 6px;
+            background-color: rgba(139, 92, 246, 0.1);
+            cursor: text;
+        }
+
+        body.edit-mode [contenteditable="true"]:focus {
+            outline: 2px solid #22d3ee;
+            background-color: rgba(139, 92, 246, 0.18);
+        }
+
+        .edit-only {
+            display: none !important;
+        }
+
+        body.edit-mode .edit-only {
+            display: inline-flex !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-darkbg-950 dark:text-slate-100 transition-colors duration-300 studio-grid">
+
+    <!-- Top Customizer Bar -->
+    <div class="sticky top-0 z-50 bg-darkbg-900/95 backdrop-blur-md text-white border-b border-slate-800/80 px-4 py-2.5 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded bg-accent-600/20 text-accent-400 border border-accent-500/30">
+                    <i class="fa-solid fa-film"></i> Studio Customizer
+                </span>
+                <label class="inline-flex items-center cursor-pointer select-none">
+                    <input type="checkbox" id="editModeToggle" class="sr-only peer">
+                    <div class="relative w-11 h-6 bg-slate-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-600"></div>
+                    <span class="ms-2.5 text-sm font-medium text-slate-200">Edit Mode</span>
+                </label>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                <button onclick="exportConfig()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-download text-accent-400"></i> Export Config
+                </button>
+                <label class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 flex items-center gap-1.5 cursor-pointer transition">
+                    <i class="fa-solid fa-upload text-cyan-400"></i> Import Config
+                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importConfig(event)">
+                </label>
+                <button onclick="resetConfig()" class="px-3 py-1.5 rounded bg-red-950/50 hover:bg-red-900/60 border border-red-800/50 text-red-300 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+                <button onclick="toggleTheme()" class="p-1.5 px-2.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 transition">
+                    <i id="themeIcon" class="fa-solid fa-sun"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="border-b border-slate-200/80 dark:border-slate-800/70 bg-white/80 dark:bg-darkbg-950/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#" class="font-mono font-bold text-lg tracking-tight flex items-center gap-2.5">
+                <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-accent-600 to-cyan-500 text-white flex items-center justify-center font-extrabold shadow-lg shadow-accent-600/25">
+                    <i class="fa-solid fa-play text-xs ml-0.5"></i>
+                </span>
+                <span data-field="brandHandle">@imo3az_</span>
+            </a>
+            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300">
+                <a href="#work" class="hover:text-accent-500 transition">Portfolio</a>
+                <a href="#services" class="hover:text-accent-500 transition">Services & Tools</a>
+                <a href="#about" class="hover:text-accent-500 transition">About</a>
+                <a href="#contact" class="px-4 py-2 rounded-xl bg-accent-600 hover:bg-accent-700 text-white font-semibold transition shadow-md shadow-accent-600/20">Hire Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <div class="grid lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium bg-accent-500/10 text-accent-600 dark:text-accent-400 border border-accent-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span data-field="availability">Available for Freelance Video Editing & Design</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                    Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-400 via-purple-400 to-cyan-400" data-field="fullName">Moaz Mohamed</span>
+                </h1>
+
+                <h2 class="text-xl sm:text-2xl font-semibold text-slate-700 dark:text-slate-300" data-field="headline">
+                    Video Editor & Creative Graphic Designer
+                </h2>
+
+                <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl" data-field="bio">
+                    Crafting high-retention YouTube videos, dynamic Reels/TikToks, and scroll-stopping promo ads using Adobe Premiere Pro. Balancing creative storytelling with the precision and discipline of a 4th-year Medical Student in Egypt.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <a href="#work" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-accent-600 to-accent-700 hover:from-accent-500 hover:to-accent-600 text-white font-semibold shadow-lg shadow-accent-600/25 transition flex items-center gap-2">
+                        <i class="fa-solid fa-clapperboard"></i> Watch My Work
+                    </a>
+                    <a id="drivePortfolioBtn" href="https://drive.google.com/drive/my-drive?hl=ar" target="_blank" class="px-6 py-3.5 rounded-xl bg-white dark:bg-darkbg-850 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 font-semibold transition flex items-center gap-2">
+                        <i class="fa-brands fa-google-drive text-cyan-400"></i> Google Drive Reel
+                    </a>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-500 dark:text-slate-400">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-accent-400"></i>
+                        <span data-field="location">Egypt • Worldwide Remote</span>
+                    </span>
+                    <div class="flex items-center gap-4 text-lg">
+                        <a href="https://instagram.com/imo3az_" target="_blank" class="hover:text-accent-400 transition" title="Instagram @imo3az_"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://drive.google.com/drive/my-drive?hl=ar" target="_blank" class="hover:text-cyan-400 transition" title="Google Drive Portfolio"><i class="fa-brands fa-google-drive"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Showreel / Editor Timeline Card -->
+            <div class="lg:col-span-5">
+                <div class="rounded-2xl bg-white/90 dark:bg-darkbg-850/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-accent-600/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-cyan-500/15 rounded-full blur-3xl"></div>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-mono uppercase tracking-wider text-accent-500 dark:text-accent-400 font-semibold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span> Showreel & Export Specs
+                        </span>
+                        <span class="px-2.5 py-0.5 text-xs font-mono rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">1080p / 4K H.264</span>
+                    </div>
+
+                    <!-- Simulated Premiere Pro Timeline Graphic -->
+                    <div class="rounded-xl bg-darkbg-950 p-4 border border-slate-800 mb-5 space-y-2.5">
+                        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                            <span>SEQUENCE: MAIN_EDIT_V3.PRPROJ</span>
+                            <span class="text-cyan-400">00:01:45:12</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="h-3 rounded bg-accent-600/80 w-full flex items-center px-2 text-[9px] font-mono text-white">V2 • Color Grade & Captions</div>
+                            <div class="flex gap-1.5">
+                                <div class="h-3 rounded bg-cyan-500/80 w-2/3 flex items-center px-2 text-[9px] font-mono text-slate-950 font-bold">V1 • A-Roll Cuts</div>
+                                <div class="h-3 rounded bg-purple-500/80 w-1/3 flex items-center px-2 text-[9px] font-mono text-white">B-Roll</div>
+                            </div>
+                            <div class="h-3 rounded bg-emerald-500/70 w-5/6 flex items-center px-2 text-[9px] font-mono text-slate-950 font-bold">A1 • SFX & Crisp Audio Mix</div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-bold mb-1" data-field="reelTitle">Fast Turnaround. Clean Pacing.</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 mb-5 leading-relaxed" data-field="reelDesc">
+                        Every cut is timed to keep viewers hooked—combining clean transitions, custom sound design, and sharp typography.
+                    </p>
+
+                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                        <div>
+                            <div class="text-lg font-extrabold text-accent-500 dark:text-accent-400" data-field="stat1Val">24–48h</div>
+                            <div class="text-[11px] text-slate-500" data-field="stat1Lbl">Fast Delivery</div>
+                        </div>
+                        <div>
+                            <div class="text-lg font-extrabold text-cyan-500 dark:text-cyan-400" data-field="stat2Val">100%</div>
+                            <div class="text-[11px] text-slate-500" data-field="stat2Lbl">Client Focus</div>
+                        </div>
+                        <div>
+                            <div class="text-lg font-extrabold text-accent-500 dark:text-accent-400" data-field="stat3Val">@imo3az_</div>
+                            <div class="text-[11px] text-slate-500" data-field="stat3Lbl">Creative Brand</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio / Video Showcase Section -->
+    <section id="work" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200/70 dark:border-slate-800/70">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div>
+                <span class="text-xs font-mono uppercase tracking-widest text-accent-500 dark:text-accent-400 font-semibold">Selected Edits & Designs</span>
+                <h2 class="text-3xl font-bold mt-1">Featured Video & Design Work</h2>
+            </div>
+            <button onclick="openProjectModal()" class="edit-only items-center gap-2 px-4 py-2 rounded-xl bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium shadow">
+                <i class="fa-solid fa-plus"></i> Add Video / Project
+            </button>
+        </div>
+
+        <!-- Category Filters -->
+        <div id="projectFilters" class="flex flex-wrap gap-2 mb-8"></div>
+
+        <!-- Projects Grid -->
+        <div id="projectsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Services & Software Arsenal -->
+    <section id="services" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200/70 dark:border-slate-800/70">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <div>
+                <span class="text-xs font-mono uppercase tracking-widest text-accent-500 dark:text-accent-400 font-semibold">What I Do</span>
+                <h2 class="text-3xl font-bold mt-1">Editing Services & Tools</h2>
+            </div>
+            <button onclick="openSkillModal()" class="edit-only items-center gap-2 px-4 py-2 rounded-xl bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium shadow">
+                <i class="fa-solid fa-plus"></i> Add Tool / Skill
+            </button>
+        </div>
+
+        <div id="skillsGrid" class="grid md:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- About & Background Section -->
+    <section id="about" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200/70 dark:border-slate-800/70">
+        <div class="rounded-3xl bg-white dark:bg-darkbg-850 border border-slate-200 dark:border-slate-800 p-8 md:p-10 shadow-sm grid lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-8 space-y-4">
+                <span class="text-xs font-mono uppercase tracking-widest text-cyan-500 dark:text-cyan-400 font-semibold">Behind The Timeline</span>
+                <h2 class="text-2xl sm:text-3xl font-bold" data-field="aboutHeading">Creative Eye Meets Medical Precision</h2>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed" data-field="aboutText">
+                    I'm Moaz Mohamed (@imo3az_), a freelance Video Editor & Graphic Designer currently in my 4th year of Medical School. Studying medicine taught me extreme attention to detail, strict deadline management, and calm problem-solving—qualities I bring into every Adobe Premiere Pro timeline and brand design I deliver.
+                </p>
+            </div>
+            <div class="lg:col-span-4 space-y-3 bg-slate-50 dark:bg-darkbg-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-accent-600/15 text-accent-400 flex items-center justify-center">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Primary Suite</div>
+                        <div class="text-sm font-bold" data-field="primaryTool">Adobe Premiere Pro</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-cyan-500/15 text-cyan-400 flex items-center justify-center">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Academic Track</div>
+                        <div class="text-sm font-bold" data-field="eduBadge">4th-Year Medical Student</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Languages</div>
+                        <div class="text-sm font-bold" data-field="langs">Arabic (Native) & English</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200/70 dark:border-slate-800/70">
+        <div class="rounded-3xl bg-gradient-to-br from-darkbg-900 via-darkbg-850 to-slate-900 text-white p-8 md:p-12 border border-slate-800 shadow-2xl grid lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-6 space-y-5">
+                <span class="text-xs font-mono uppercase tracking-widest text-accent-400 font-semibold">Let's Collaborate</span>
+                <h2 class="text-3xl sm:text-4xl font-bold">Ready to Elevate Your Content?</h2>
+                <p class="text-slate-300 leading-relaxed" data-field="contactPitch">
+                    Need clean, engaging edits for YouTube, Instagram Reels, gaming promos, or brand visuals? Send me your raw footage and vision—I'll handle the rest.
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <a href="https://instagram.com/imo3az_" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 transition">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 flex items-center justify-center text-white text-lg">
+                            <i class="fa-brands fa-instagram"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400">Instagram DM</div>
+                            <div class="font-mono text-sm font-semibold" data-field="instaHandle">@imo3az_</div>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-slate-400 text-xs"></i>
+                    </a>
+
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/60 border border-slate-700/80">
+                        <div class="w-10 h-10 rounded-lg bg-accent-600/20 flex items-center justify-center text-accent-400">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400">Direct Email</div>
+                            <div class="font-mono text-sm" data-field="email">moazmohamed170@gmail.com</div>
+                        </div>
+                        <button onclick="copyEmail()" class="ml-auto px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-medium transition">
+                            <i class="fa-regular fa-copy mr-1"></i> <span id="copyText">Copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6 bg-darkbg-950/80 p-6 rounded-2xl border border-slate-800">
+                <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Your Name / Brand</label>
+                        <input type="text" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl bg-darkbg-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-accent-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Project Type</label>
+                        <select class="w-full px-4 py-2.5 rounded-xl bg-darkbg-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-accent-500">
+                            <option>YouTube Video Editing</option>
+                            <option>Instagram Reels / TikTok</option>
+                            <option>Promo / Commercial Ad</option>
+                            <option>Logo & Graphic Design</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Project Details</label>
+                        <textarea rows="3" required placeholder="Tell me about your raw footage, style, and deadline..." class="w-full px-4 py-2.5 rounded-xl bg-darkbg-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-accent-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-accent-600 to-cyan-600 hover:from-accent-500 hover:to-cyan-500 text-white font-semibold text-sm transition shadow-lg shadow-accent-600/20">
+                        Send Project Inquiry <i class="fa-solid fa-paper-plane ml-1.5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-sm text-slate-500">
+        <p>© <span id="year">2026</span> <span data-field="footerName">Moaz Mohamed (@imo3az_)</span> • Video Editor & Graphic Designer</p>
+    </footer>
+
+    <!-- Modal for Adding/Editing Video Projects -->
+    <div id="projectModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-darkbg-850 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <h3 id="projectModalTitle" class="text-xl font-bold mb-4">Add Video / Design Project</h3>
+            <form id="projectForm" onsubmit="saveProject(event)" class="space-y-4">
+                <input type="hidden" id="projIndex">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Project Title</label>
+                    <input type="text" id="projTitle" required placeholder="e.g., Gaming Store Promo Ad" class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Category</label>
+                        <select id="projCategory" class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                            <option value="Promo & Ads">Promo & Ads</option>
+                            <option value="Reels & Shorts">Reels & Shorts</option>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Graphic Design">Graphic Design</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Format / Aspect Ratio</label>
+                        <input type="text" id="projFormat" placeholder="1080p • 16:9 or 9:16" required class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Description</label>
+                    <textarea id="projDesc" rows="3" required class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Tools Used (comma separated)</label>
+                    <input type="text" id="projTech" placeholder="Premiere Pro, Sound Design, Color Grading" required class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Google Drive / Video Link</label>
+                    <input type="url" id="projUrl" value="https://drive.google.com/drive/my-drive?hl=ar" required class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('projectModal')" class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-sm">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-accent-600 text-white text-sm font-medium">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Skill -->
+    <div id="skillModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-darkbg-850 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4">Add Editing Tool or Skill</h3>
+            <form onsubmit="saveSkill(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Category</label>
+                    <select id="skillCategory" class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                        <option value="0">Video Editing & Post-Production</option>
+                        <option value="1">Graphic Design & Branding</option>
+                        <option value="2">Workflow & Delivery</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Skill / Software Name</label>
+                    <input type="text" id="skillName" placeholder="e.g., After Effects" required class="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-darkbg-900 border border-slate-300 dark:border-slate-700 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('skillModal')" class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-sm">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-accent-600 text-white text-sm font-medium">Add Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // MOAZ MOHAMED (@imo3az_) PORTFOLIO CONFIG
+        // =====================================================================
+        const DEFAULT_CONFIG = {
+            fields: {
+                brandHandle: "@imo3az_",
+                availability: "Available for Freelance Video Editing & Design",
+                fullName: "Moaz Mohamed",
+                headline: "Video Editor & Creative Graphic Designer",
+                bio: "Crafting high-retention YouTube videos, dynamic Reels/TikToks, and scroll-stopping promo ads using Adobe Premiere Pro. Balancing creative storytelling with the precision and discipline of a 4th-year Medical Student in Egypt.",
+                location: "Egypt • Worldwide Remote",
+                reelTitle: "Fast Turnaround. Clean Pacing.",
+                reelDesc: "Every cut is timed to keep viewers hooked—combining clean transitions, custom sound design, and sharp typography.",
+                stat1Val: "24–48h",
+                stat1Lbl: "Fast Delivery",
+                stat2Val: "100%",
+                stat2Lbl: "Client Focus",
+                stat3Val: "@imo3az_",
+                stat3Lbl: "Creative Brand",
+                aboutHeading: "Creative Eye Meets Medical Precision",
+                aboutText: "I'm Moaz Mohamed (@imo3az_), a freelance Video Editor & Graphic Designer currently in my 4th year of Medical School. Studying medicine taught me extreme attention to detail, strict deadline management, and calm problem-solving—qualities I bring into every Adobe Premiere Pro timeline and brand design I deliver.",
+                primaryTool: "Adobe Premiere Pro",
+                eduBadge: "4th-Year Medical Student",
+                langs: "Arabic (Native) & English",
+                contactPitch: "Need clean, engaging edits for YouTube, Instagram Reels, gaming promos, or brand visuals? Send me your raw footage and vision—I'll handle the rest.",
+                instaHandle: "@imo3az_",
+                email: "moazmohamed170@gmail.com",
+                footerName: "Moaz Mohamed (@imo3az_)"
+            },
+            skillCategories: [
+                {
+                    title: "Video Editing & Post",
+                    icon: "fa-film",
+                    items: ["Adobe Premiere Pro", "Jump Cuts & Pacing", "Color Correction", "Audio Sync & SFX", "Subtitles & Captions", "1080p H.264 Export"]
+                },
+                {
+                    title: "Graphic & Brand Design",
+                    icon: "fa-pen-nib",
+                    items: ["Logo & Brand Identity", "YouTube Thumbnails", "Social Media Posts", "Custom Certificates", "Photo Retouching"]
+                },
+                {
+                    title: "Formats & Platforms",
+                    icon: "fa-clapperboard",
+                    items: ["YouTube Long-Form", "Instagram Reels & Stories", "TikTok / Shorts", "Gaming & Store Promos", "Client Revisions"]
+                }
+            ],
+            projects: [
+                {
+                    title: "Gaming Store Promotional Commercial",
+                    category: "Promo & Ads",
+                    format: "1080p • 16:9 / 9:16",
+                    desc: "High-energy promotional video edit featuring beat-synced cuts, dynamic text callouts, and punchy sound effects tailored for social media ad campaigns.",
+                    tech: ["Premiere Pro", "Sound Design", "Speed Ramping"],
+                    url: "https://drive.google.com/drive/my-drive?hl=ar"
+                },
+                {
+                    title: "High-Retention YouTube Edit",
+                    category: "YouTube",
+                    format: "1080p MP4 • H.264",
+                    desc: "Clean narrative cut removing dead air, enhanced with B-roll overlays, smooth zoom-ins, and balanced voiceover audio.",
+                    tech: ["Premiere Pro", "B-Roll Pacing", "Audio Mixing"],
+                    url: "https://drive.google.com/drive/my-drive?hl=ar"
+                },
+                {
+                    title: "Instagram Story & Reel Ad Pack",
+                    category: "Reels & Shorts",
+                    format: "9:16 Vertical",
+                    desc: "Scroll-stopping vertical edits optimized for mobile retention with bold animated captions and hook-driven openings.",
+                    tech: ["Premiere Pro", "Animated Captions", "Color Grade"],
+                    url: "https://drive.google.com/drive/my-drive?hl=ar"
+                },
+                {
+                    title: "Luxury Brand Identity & Visual Kit",
+                    category: "Graphic Design",
+                    format: "Logo • Cards • Social",
+                    desc: "Minimalist luxury visual identity including custom logo mockups, business cards, and cohesive brand color palettes.",
+                    tech: ["Brand Identity", "Typography", "Mockups"],
+                    url: "https://drive.google.com/drive/my-drive?hl=ar"
+                }
+            ]
+        };
+
+        let config = JSON.parse(localStorage.getItem('moazPortfolioConfig_v2')) || JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        let activeFilter = 'All';
+
+        function saveState() {
+            localStorage.setItem('moazPortfolioConfig_v2', JSON.stringify(config));
+        }
+
+        function renderAll() {
+            document.querySelectorAll('[data-field]').forEach(el => {
+                const key = el.getAttribute('data-field');
+                if (config.fields[key] !== undefined) {
+                    el.innerText = config.fields[key];
+                }
+            });
+            renderProjects();
+            renderSkills();
+        }
+
+        function renderProjects() {
+            const categories = ['All', ...new Set(config.projects.map(p => p.category))];
+            document.getElementById('projectFilters').innerHTML = categories.map(cat => `
+                <button onclick="setFilter('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-mono font-medium transition ${activeFilter === cat ? 'bg-accent-600 text-white shadow-md shadow-accent-600/20' : 'bg-white dark:bg-darkbg-850 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-500'}">
+                    ${cat}
+                </button>
+            `).join('');
+
+            const filtered = activeFilter === 'All' ? config.projects : config.projects.filter(p => p.category === activeFilter);
+            document.getElementById('projectsGrid').innerHTML = filtered.map(proj => {
+                const realIdx = config.projects.indexOf(proj);
+                return `
+                <div class="group rounded-2xl bg-white dark:bg-darkbg-850 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:border-accent-500/60 transition flex flex-col justify-between">
+                    <div>
+                        <!-- Video Thumbnail Preview Header -->
+                        <div class="h-36 bg-gradient-to-br from-slate-900 via-darkbg-900 to-accent-950 relative flex items-center justify-center border-b border-slate-800">
+                            <div class="w-12 h-12 rounded-full bg-accent-600/90 group-hover:scale-110 transition text-white flex items-center justify-center shadow-lg shadow-accent-600/30">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </div>
+                            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold bg-black/60 text-accent-300 backdrop-blur-sm">
+                                ${proj.category}
+                            </span>
+                            <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-[10px] font-mono bg-black/60 text-slate-300">
+                                ${proj.format}
+                            </span>
+                            <div class="absolute top-2.5 right-2.5 flex gap-1">
+                                <button onclick="openProjectModal(${realIdx})" class="edit-only p-1.5 rounded bg-slate-900/90 text-slate-300 hover:text-accent-400" title="Edit">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button onclick="deleteProject(${realIdx})" class="edit-only p-1.5 rounded bg-slate-900/90 text-slate-300 hover:text-red-400" title="Delete">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold mb-2 group-hover:text-accent-400 transition">${proj.title}</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">${proj.desc}</p>
+                        </div>
+                    </div>
+
+                    <div class="px-5 pb-5">
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            ${proj.tech.map(t => `<span class="px-2.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-darkbg-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">${t}</span>`).join('')}
+                        </div>
+                        <a href="${proj.url}" target="_blank" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-darkbg-900 hover:bg-accent-600 hover:text-white dark:hover:bg-accent-600 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                            <i class="fa-brands fa-google-drive"></i> Watch Sample on Drive <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function setFilter(cat) {
+            activeFilter = cat;
+            renderProjects();
+        }
+
+        function renderSkills() {
+            document.getElementById('skillsGrid').innerHTML = config.skillCategories.map((cat, catIdx) => `
+                <div class="rounded-2xl bg-white dark:bg-darkbg-850 border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-accent-600/15 text-accent-500 dark:text-accent-400 flex items-center justify-center">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">${cat.title}</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${cat.items.map((skill, skillIdx) => `
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-slate-100 dark:bg-darkbg-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                                ${skill}
+                                <button onclick="deleteSkill(${catIdx}, ${skillIdx})" class="edit-only text-red-400 hover:text-red-500 ml-1">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Edit Mode Toggle
+        document.getElementById('editModeToggle').addEventListener('change', (e) => {
+            const isEditing = e.target.checked;
+            document.body.classList.toggle('edit-mode', isEditing);
+            document.querySelectorAll('[data-field]').forEach(el => {
+                el.contentEditable = isEditing;
+            });
+        });
+
+        document.addEventListener('input', (e) => {
+            if (e.target.hasAttribute('data-field')) {
+                const key = e.target.getAttribute('data-field');
+                config.fields[key] = e.target.innerText;
+                saveState();
+            }
+        });
+
+        // Project Modal CRUD
+        function openProjectModal(idx = null) {
+            document.getElementById('projectModal').classList.remove('hidden');
+            if (idx !== null) {
+                const p = config.projects[idx];
+                document.getElementById('projectModalTitle').innerText = 'Edit Project';
+                document.getElementById('projIndex').value = idx;
+                document.getElementById('projTitle').value = p.title;
+                document.getElementById('projCategory').value = p.category;
+                document.getElementById('projFormat').value = p.format;
+                document.getElementById('projDesc').value = p.desc;
+                document.getElementById('projTech').value = p.tech.join(', ');
+                document.getElementById('projUrl').value = p.url;
+            } else {
+                document.getElementById('projectModalTitle').innerText = 'Add Video / Design Project';
+                document.getElementById('projectForm').reset();
+                document.getElementById('projIndex').value = '';
+                document.getElementById('projUrl').value = 'https://drive.google.com/drive/my-drive?hl=ar';
+            }
+        }
+
+        function saveProject(e) {
+            e.preventDefault();
+            const idx = document.getElementById('projIndex').value;
+            const projObj = {
+                title: document.getElementById('projTitle').value,
+                category: document.getElementById('projCategory').value,
+                format: document.getElementById('projFormat').value,
+                desc: document.getElementById('projDesc').value,
+                tech: document.getElementById('projTech').value.split(',').map(s => s.trim()).filter(Boolean),
+                url: document.getElementById('projUrl').value
+            };
+            if (idx !== '') {
+                config.projects[parseInt(idx)] = projObj;
+            } else {
+                config.projects.unshift(projObj);
+            }
+            saveState();
+            renderProjects();
+            closeModal('projectModal');
+        }
+
+        function deleteProject(idx) {
+            if (confirm('Delete this project?')) {
+                config.projects.splice(idx, 1);
+                saveState();
+                renderProjects();
+            }
+        }
+
+        // Skill Modal CRUD
+        function openSkillModal() {
+            document.getElementById('skillModal').classList.remove('hidden');
+        }
+
+        function saveSkill(e) {
+            e.preventDefault();
+            const catIdx = parseInt(document.getElementById('skillCategory').value);
+            const name = document.getElementById('skillName').value.trim();
+            if (name) {
+                config.skillCategories[catIdx].items.push(name);
+                saveState();
+                renderSkills();
+            }
+            document.getElementById('skillName').value = '';
+            closeModal('skillModal');
+        }
+
+        function deleteSkill(catIdx, skillIdx) {
+            config.skillCategories[catIdx].items.splice(skillIdx, 1);
+            saveState();
+            renderSkills();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Export / Import / Reset
+        function exportConfig() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "imo3az-portfolio-config.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function importConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.fields && imported.projects) {
+                        config = imported;
+                        saveState();
+                        renderAll();
+                        alert('Configuration loaded successfully!');
+                    } else {
+                        alert('Invalid JSON file.');
+                    }
+                } catch (err) {
+                    alert('Error reading JSON file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetConfig() {
+            if (confirm('Reset portfolio back to default?')) {
+                config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                saveState();
+                renderAll();
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            document.getElementById('themeIcon').className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        function copyEmail() {
+            navigator.clipboard.writeText(config.fields.email);
+            const copyText = document.getElementById('copyText');
+            copyText.innerText = 'Copied!';
+            setTimeout(() => copyText.innerText = 'Copy', 2000);
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            alert('Message sent! You can also DM @imo3az_ directly on Instagram for faster replies.');
+            e.target.reset();
+        }
+
+        document.getElementById('year').innerText = new Date().getFullYear();
+        renderAll();
+    </script>
+</body>
+</html>
